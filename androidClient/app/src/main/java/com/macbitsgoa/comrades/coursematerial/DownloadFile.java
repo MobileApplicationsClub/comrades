@@ -1,7 +1,6 @@
 package com.macbitsgoa.comrades.coursematerial;
 
 import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Log;
 
 import com.macbitsgoa.comrades.BuildConfig;
@@ -24,7 +23,6 @@ public class DownloadFile extends AsyncTask<Void, Integer, Integer> {
     private static final String TAG = TAG_PREFIX + DownloadFile.class.getSimpleName();
     private final String downloadUrl;
     private final String fName;
-    private final int id = 1;
     private final String path;
     private final String extension;
 
