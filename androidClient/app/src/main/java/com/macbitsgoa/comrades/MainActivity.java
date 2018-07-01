@@ -18,11 +18,13 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.macbitsgoa.comrades.CHC.BITS_EMAIL_SUFFIX;
-import static com.macbitsgoa.comrades.CHC.TAG_PREFIX;
+import static com.macbitsgoa.comrades.AddCourseActivityKt.launchCourseChooser;
+import static com.macbitsgoa.comrades.CHCKt.BITS_EMAIL_SUFFIX;
+import static com.macbitsgoa.comrades.CHCKt.TAG_PREFIX;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,10 +34,11 @@ public class MainActivity extends AppCompatActivity {
     final GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .requestId()
+            .requestProfile()
             .build();
     private CoordinatorLayout rootCl;
     private GoogleSignInClient gsiClient;
-
+    private CourseListVm viewModel;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -48,13 +51,14 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView coursesRv = findViewById(R.id.rv_course_list);
         coursesRv.setLayoutManager(new LinearLayoutManager(this));
         coursesRv.setAdapter(new CourseAdapter());
+        viewModel = ViewModelProviders.of(this).get(CourseListVm.class);
     }
 
     private void handleAddCourse() {
         final boolean canAddCourse = GoogleSignIn.getLastSignedInAccount(this) != null;
         wantsToAddCourse = true;
         if (canAddCourse) {
-            (new AddCourseFragment()).show(getSupportFragmentManager(), "AddCourseFragment");
+            launchCourseChooser(this);
             wantsToAddCourse = false;
         } else {
             Snackbar.make(rootCl, getString(R.string.login_to_add_course), Snackbar.LENGTH_SHORT)
@@ -77,7 +81,10 @@ public class MainActivity extends AppCompatActivity {
         final MenuItem signOut = menu.findItem(R.id.action_sign_out);
         signOut.setVisible(signedIn);
         signOut.setOnMenuItemClickListener(menuItem -> {
-            gsiClient.signOut().addOnCompleteListener(task -> invalidateOptionsMenu());
+            gsiClient.signOut().addOnCompleteListener(task -> {
+                invalidateOptionsMenu();
+                viewModel.signOut();
+            });
             return true;
         });
         return true;
@@ -97,7 +104,13 @@ public class MainActivity extends AppCompatActivity {
         try {
             final GoogleSignInAccount account = task.getResult(ApiException.class);
             invalidateOptionsMenu();
-            if (!account.getEmail().endsWith(BITS_EMAIL_SUFFIX)) {
+            if (account.getEmail().endsWith(BITS_EMAIL_SUFFIX)) {
+                viewModel.registerSelf(account);
+                if (wantsToAddCourse) {
+                    wantsToAddCourse = false;
+                    handleAddCourse();
+                }
+            } else {
                 gsiClient.signOut()
                         .addOnCompleteListener(voidTask -> {
                             invalidateOptionsMenu();
@@ -106,9 +119,6 @@ public class MainActivity extends AppCompatActivity {
                                             launchDefaultSignIn())
                                     .show();
                         });
-            } else if (wantsToAddCourse) {
-                wantsToAddCourse = false;
-                handleAddCourse();
             }
         } catch (final ApiException e) {
             Log.e(TAG, e.getMessage(), e.fillInStackTrace());

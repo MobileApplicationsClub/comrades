@@ -14,15 +14,15 @@ import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.macbitsgoa.comrades.CHC.TAG_PREFIX;
+import static com.macbitsgoa.comrades.CHCKt.TAG_PREFIX;
 import static com.macbitsgoa.comrades.FirebaseKeys.COURSES;
 
 /**
  * @author Rushikesh Jogdand.
  */
 public class CourseAdapter extends RecyclerView.Adapter<CourseVh> {
-    private final List<Course> courses = new ArrayList<>(0);
     private static final String TAG = TAG_PREFIX + CourseAdapter.class.getSimpleName();
+    private final List<Course> courses = new ArrayList<>(0);
 
     public CourseAdapter() {
         FirebaseDatabase.getInstance().getReference().child(COURSES).addValueEventListener(new ValueEventListener() {
