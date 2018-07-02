@@ -3,7 +3,9 @@ package com.macbitsgoa.comrades
 import android.annotation.SuppressLint
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.macbitsgoa.comrades.persistance.Course
 import com.macbitsgoa.comrades.persistance.DataRepository
 import com.macbitsgoa.comrades.persistance.Person
 
@@ -14,6 +16,7 @@ import com.macbitsgoa.comrades.persistance.Person
  */
 class CourseListVm(application: Application) : AndroidViewModel(application) {
     protected val repo: DataRepository = DataRepository(application)
+    val courseList: LiveData<List<Course>> = repo.courses
 
     @SuppressLint("ApplySharedPref")
     fun registerSelf(account: GoogleSignInAccount) {

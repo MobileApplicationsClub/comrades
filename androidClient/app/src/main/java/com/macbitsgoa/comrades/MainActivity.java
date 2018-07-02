@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
             .requestId()
             .requestProfile()
             .build();
+    private final CourseAdapter courseAdapter = new CourseAdapter();
     private CoordinatorLayout rootCl;
     private GoogleSignInClient gsiClient;
     private CourseListVm viewModel;
@@ -50,8 +51,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(findViewById(R.id.toolbar_main_act));
         final RecyclerView coursesRv = findViewById(R.id.rv_course_list);
         coursesRv.setLayoutManager(new LinearLayoutManager(this));
-        coursesRv.setAdapter(new CourseAdapter());
+        coursesRv.setAdapter(courseAdapter);
         viewModel = ViewModelProviders.of(this).get(CourseListVm.class);
+        viewModel.getCourseList().observe(this, courseAdapter::setCourses);
     }
 
     private void handleAddCourse() {

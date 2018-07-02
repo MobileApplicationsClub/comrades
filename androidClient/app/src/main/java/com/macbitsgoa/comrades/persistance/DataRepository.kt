@@ -19,17 +19,14 @@ import com.macbitsgoa.comrades.*
  * @author Rushikesh Jogdand.
  */
 class DataRepository(application: Application) {
-    private val dao: DataAccessObject
-    private val courses: LiveData<List<Course>>
+    private val dao: DataAccessObject = Database.getInstance(application).dao
+    val courses: LiveData<List<Course>> = dao.courses
     protected val tag = TAG_PREFIX + DataRepository::class.java.simpleName
     protected val usersRef: DatabaseReference = firebaseRootRef.child(FirebaseKeys.USERS)
-    private var coursesRef: DatabaseReference = firebaseRootRef.child(FirebaseKeys.COURSES)
+    private val coursesRef: DatabaseReference = firebaseRootRef.child(FirebaseKeys.COURSES)
     protected val sharedPref: SharedPreferences = defaultPref(application)
 
     init {
-        val db = Database.getInstance(application)
-        dao = db.dao
-        courses = dao.courses
         if (!sharedPref.getBoolean(coursesAdded, false)) {
             val authors = mutableSetOf<String>()
             val courses = mutableSetOf<Course>()
@@ -44,6 +41,9 @@ class DataRepository(application: Application) {
                         course.isFollowing = false
                         courses.add(course)
                         authors.add(course.addedById)
+                        if (BuildConfig.DEBUG) {
+                            Log.i(tag, "addedById")
+                        }
                     }
 
                     FirebaseMessaging.getInstance().subscribeToTopic(FirebaseKeys.TOPIC_COURSE_UPDATES)
@@ -58,10 +58,16 @@ class DataRepository(application: Application) {
                                 val person: Person = p0.getValue(Person::class.java) ?: return
                                 insertLocally(person)
                                 authors.remove(person.id)
+                                if (BuildConfig.DEBUG) {
+                                    Log.i(tag, "added person ${person.name} remaining ${authors.size}, empty = ${authors.isEmpty()}")
+                                }
                                 if (authors.isEmpty()) {
                                     // all authors added, now foreign key constraint should not fail
                                     courses.forEach {
                                         insertLocally(it)
+                                        if (BuildConfig.DEBUG) {
+                                            Log.i(tag, "added course ${it.name}")
+                                        }
                                     }
                                     sharedPref.edit()
                                             .putBoolean(coursesAdded, true)
