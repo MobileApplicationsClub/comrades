@@ -25,7 +25,6 @@ import static com.macbitsgoa.comrades.coursematerial.MetaDataAndPermissions.AUTH
 
 /**
  * Code to upload file.
- *
  * @author aayushSingla
  */
 
@@ -35,6 +34,7 @@ public class UploadFile extends AsyncTask<Void, Void, String> {
     private final String fName;
     private final String accessToken;
     private String fileId;
+    private File file;
 
 
     public UploadFile(final String path, final String accessToken,
@@ -60,7 +60,7 @@ public class UploadFile extends AsyncTask<Void, Void, String> {
 
     private String uploadFile() {
         try {
-            final File file = new File(path);
+            file = new File(path);
             final OkHttpClient okHttpClient = new OkHttpClient();
             final RequestBody requestBody = RequestBody.create(MediaType.parse(getMimeType(path)),
                     fileToBytes(file));
@@ -120,7 +120,7 @@ public class UploadFile extends AsyncTask<Void, Void, String> {
             Log.i(TAG, "File upload result is " + result);
         }
         final MetaDataAndPermissions mdp =
-                new MetaDataAndPermissions(fileId, accessToken, fName, getFileExtension(path));
+                new MetaDataAndPermissions(fileId, accessToken, fName, getFileExtension(path), file.length());
         mdp.execute();
     }
 
