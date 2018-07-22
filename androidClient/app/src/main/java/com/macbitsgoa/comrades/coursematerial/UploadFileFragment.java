@@ -127,6 +127,7 @@ public class UploadFileFragment extends DialogFragment
                 if (BuildConfig.DEBUG) {
                     Log.e(TAG, "Invalid onClickListener");
                 }
+                break;
         }
     }
 
