@@ -52,7 +52,7 @@ public class UploadService extends IntentService {
     private String accessToken;
     private Long fileSize;
     private NotificationManager mNotificationManager;
-    NotificationCompat.Builder mBuilder;
+    private NotificationCompat.Builder mBuilder;
 
     public static int NOTIFICATION_ID;
 
