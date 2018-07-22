@@ -41,6 +41,11 @@ public class MaterialViewHolder extends RecyclerView.ViewHolder {
         tvDownloadStatus = itemView.findViewById(R.id.status);
     }
 
+    /**
+     * updates the view in recycler with the data and sets onClick listener to it.
+     *
+     * @param data: object of class @{@link ItemCourseMaterial}
+     */
     public void populate(ItemCourseMaterial data) {
         tvOwnerName.setText("added by " + data.getAddedBy());
         tvFileName.setText(data.getFileName());

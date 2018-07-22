@@ -119,8 +119,8 @@ public class UploadFile extends AsyncTask<Void, Void, String> {
         if (BuildConfig.DEBUG) {
             Log.i(TAG, "File upload result is " + result);
         }
-        final MetaDataAndPermissions mdp =
-                new MetaDataAndPermissions(fileId, accessToken, fName, getFileExtension(path), file.length());
+        final MetaDataAndPermissions mdp = new MetaDataAndPermissions(fileId,
+                accessToken, fName, getFileExtension(path), file.length());
         mdp.execute();
     }
 

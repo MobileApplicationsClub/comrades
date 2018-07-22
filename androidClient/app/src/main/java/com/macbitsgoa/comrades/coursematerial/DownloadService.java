@@ -21,8 +21,7 @@ import static com.macbitsgoa.comrades.CHCKt.TAG_PREFIX;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.2
- * <p>
+ * a service on a separate handler thread.
  */
 public class DownloadService extends IntentService {
 
@@ -48,18 +47,18 @@ public class DownloadService extends IntentService {
             String id = intent.getStringExtra(KEY_ITEM_ID);
             String downloadUrl = intent.getStringExtra(KEY_DOWNLOAD_URL);
             String path = intent.getStringExtra(KEY_FILE_PATH);
-            String fName = intent.getStringExtra(KEY_FILE_NAME);
+            String fileName = intent.getStringExtra(KEY_FILE_NAME);
             String extension = intent.getStringExtra(KEY_FILE_EXTENSION);
             Long fileLength = intent.getLongExtra(KEY_FILE_SIZE, 5454544);
             int position = intent.getIntExtra(KEY_ITEM_POSITION, 0);
 
-            Bundle sBundle = new Bundle();
-            sBundle.putString("id", id);
-            sBundle.putInt("position", position);
-            sBundle.putInt(RESULT_CODE, 0);
-            Intent sIntent = new Intent(ACTION);
-            sIntent.putExtras(sBundle);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(sIntent);
+            Bundle startBundle = new Bundle();
+            startBundle.putString("id", id);
+            startBundle.putInt("position", position);
+            startBundle.putInt(RESULT_CODE, 0);
+            Intent startIntent = new Intent(ACTION);
+            startIntent.putExtras(startBundle);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(startIntent);
 
             int count;
             try {
@@ -79,8 +78,8 @@ public class DownloadService extends IntentService {
 
                 // Output stream to write file
 
-                final OutputStream output = new FileOutputStream(path + fName + extension);
-                byte data[] = new byte[1024];
+                final OutputStream output = new FileOutputStream(path + fileName + extension);
+                byte[] data = new byte[1024];
                 long total = 0;
                 int progress;
                 while ((count = input.read(data)) != -1) {
@@ -89,13 +88,13 @@ public class DownloadService extends IntentService {
 
                     progress = (int) (total * 100 / fileLength);
                     if (fileLength > 0) {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("id", id);
-                        bundle.putInt("position", position);
-                        bundle.putInt("progress", progress);
-                        bundle.putInt(RESULT_CODE, 1);
+                        Bundle progressBundle = new Bundle();
+                        progressBundle.putString("id", id);
+                        progressBundle.putInt("position", position);
+                        progressBundle.putInt("progress", progress);
+                        progressBundle.putInt(RESULT_CODE, 1);
                         Intent messageIntent = new Intent(ACTION);
-                        messageIntent.putExtras(bundle);
+                        messageIntent.putExtras(progressBundle);
                         LocalBroadcastManager.getInstance(this).sendBroadcast(messageIntent);
 
                         // writing data to file
@@ -113,28 +112,39 @@ public class DownloadService extends IntentService {
                 Log.e(TAG + ":Error: ", e.getMessage());
             }
 
-            Bundle mBundle = new Bundle();
-            mBundle.putString("id", id);
-            mBundle.putInt("position", position);
-            mBundle.putInt(RESULT_CODE, 2);
-            Intent mIntent = new Intent(ACTION);
-            mIntent.putExtras(sBundle);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(mIntent);
+            Bundle finalBundle = new Bundle();
+            finalBundle.putString("id", id);
+            finalBundle.putInt("position", position);
+            finalBundle.putInt(RESULT_CODE, 2);
+            Intent finalIntent = new Intent(ACTION);
+            finalIntent.putExtras(startBundle);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(finalIntent);
 
         }
 
 
     }
 
-
+    /**
+     * used to construct an intent to start the Download service.
+     *
+     * @param context     context reference
+     * @param downloadUrl link of the file to download
+     * @param fileName    name of the file
+     * @param extension   extension of the file
+     * @param filePath    path of where to save the file
+     * @param itemId      id of the file in firebase database
+     * @param fileSize    size of the file to download
+     * @return return an Intent with all data.
+     */
     public static Intent makeIntent(final Context context, final String downloadUrl,
-                                    final String fName, final String extension,
+                                    final String fileName, final String extension,
                                     final String filePath,
                                     String itemId, Long fileSize) {
         Intent intent = new Intent(context, DownloadService.class);
         intent.putExtra(KEY_ITEM_ID, itemId);
         intent.putExtra(KEY_DOWNLOAD_URL, downloadUrl);
-        intent.putExtra(KEY_FILE_NAME, fName);
+        intent.putExtra(KEY_FILE_NAME, fileName);
         intent.putExtra(KEY_FILE_SIZE, fileSize);
         intent.putExtra(KEY_FILE_EXTENSION, extension);
         intent.putExtra(KEY_FILE_PATH, filePath);

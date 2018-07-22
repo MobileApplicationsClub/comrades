@@ -115,6 +115,10 @@ public class CourseActivity extends AppCompatActivity
                                 }
                             }
                             break;
+                        default:
+                            if (BuildConfig.DEBUG)
+                                Log.e(TAG, "Downloading Failed");
+                            break;
                     }
                 }
             }
@@ -206,7 +210,8 @@ public class CourseActivity extends AppCompatActivity
             Log.v(TAG, "onResume");
         }
         // Register broadcast receiver
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter(DownloadService.ACTION));
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(broadcastReceiver, new IntentFilter(DownloadService.ACTION));
     }
 
     @Override

@@ -63,6 +63,11 @@ public class ItemCourseMaterial {
         return mimeType;
     }
 
+    /**
+     * check if the file is actually downloaded in the system or not.
+     *
+     * @return true if file is available else false
+     */
     public boolean getFileAvailable() {
         File file = new File(String.format("%s/%s/%s/", getExternalStorageDirectory(),
                 DOWNLOAD_DIRECTORY, CourseActivity.courseId) + fileName + extension);
