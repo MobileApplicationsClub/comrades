@@ -13,15 +13,22 @@ import androidx.lifecycle.LiveData;
  */
 
 public class CourseVm extends AndroidViewModel {
-    private final CourseRepository mRepository;
-    private final LiveData<List<MyCourse>> courseList;
-    private final LiveData<List<MyCourse>> followingList;
+    private CourseRepository mRepository;
+    private LiveData<List<MyCourse>> courseList;
+    private LiveData<List<MyCourse>> followingList;
+    private MyCourse courseExsist;
 
     public CourseVm(@NonNull final Application application) {
         super(application);
         mRepository = new CourseRepository(application);
         courseList = mRepository.getAllCourses();
         followingList = mRepository.getFollowingCourses();
+    }
+
+    public MyCourse getCourseExist(@NonNull final Application application, String code, String name) {
+        mRepository = new CourseRepository(application, code, name);
+        courseExsist = mRepository.getCourseExist();
+        return courseExsist;
     }
 
     public LiveData<List<MyCourse>> getAll() {
