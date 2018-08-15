@@ -291,10 +291,10 @@ public class CourseActivity extends AppCompatActivity
         }
         courseMaterial.filePath = String.format("%s/%s/%s/", getExternalStorageDirectory(),
                 DOWNLOAD_DIRECTORY, courseId);
-        courseMaterial._id = courseId;
-        courseMaterial.isWaiting = false;
-        courseMaterial.isDownloading = false;
-        courseMaterial.progress = 0;
+        courseMaterial.setCourseId(courseId);
+        courseMaterial.setWaiting(false);
+        courseMaterial.setDownloading(false);
+        courseMaterial.setProgress(0);
         materialVm.insert(courseMaterial);
     }
 
