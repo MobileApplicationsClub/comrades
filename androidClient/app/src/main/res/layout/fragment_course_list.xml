@@ -1,31 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cl_main_activity"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.macbitsgoa.comrades.courselistfragment.CourseListFragment">
-
-    <ImageView
-        android:id="@+id/sortButton"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_gravity="end"
-        android:padding="6dp"
-        android:src="@drawable/ic_sort_black_24dp"
-        android:scaleType="fitEnd"
-        android:elevation="2dp"
-        android:foregroundTint="@color/grey"
-        android:background="@android:color/white"
-        app:layout_insetEdge="top" />
+<!--<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:id="@+id/cl_main_activity"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:orientation="vertical"-->
+    <!--tools:context="com.macbitsgoa.comrades.courselistfragment.CourseListFragment">-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_course_list"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="48dp"
+
         app:layout_dodgeInsetEdges="bottom|top" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+<!--</androidx.coordinatorlayout.widget.CoordinatorLayout>-->

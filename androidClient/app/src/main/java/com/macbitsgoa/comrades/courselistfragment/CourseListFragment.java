@@ -41,69 +41,19 @@ import static com.macbitsgoa.comrades.CHCKt.TAG_PREFIX;
 import static com.macbitsgoa.comrades.HomeActivity.snack;
 
 
-public class CourseListFragment extends Fragment implements ChildEventListener {
+public class CourseListFragment extends Fragment
+        implements ChildEventListener{
 
     private static final String ADD_COURSE_FRAGMENT = "addCourseFragment";
+    private final static String TAG = TAG_PREFIX + CourseListFragment.class.getSimpleName();
     private final ArrayList<MyCourse> arrayList = new ArrayList<>(0);
     private CourseAdapter courseAdapter;
-    private final static String TAG = TAG_PREFIX + CourseListFragment.class.getSimpleName();
     private CourseVm courseVm;
     private int currentSortOrder = 0;
 
     public static Fragment newInstance() {
         return new CourseListFragment();
     }
-
-    @Override
-    public View onCreateView(@NonNull final LayoutInflater inflater,
-                             final ViewGroup container,
-                             final Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        courseVm = ViewModelProviders.of(this).get(CourseVm.class);
-        final View view = inflater.inflate(R.layout.fragment_course_list, container, false);
-        view.findViewById(R.id.sortButton).setOnClickListener(view1 -> handleSort());
-        RecyclerView coursesRv = view.findViewById(R.id.rv_course_list);
-        courseAdapter = new CourseAdapter(arrayList);
-        coursesRv.setAdapter(courseAdapter);
-        coursesRv.setLayoutManager(new LinearLayoutManager(getContext()));
-        courseVm.getAllCoursesByName().observe(this, courses -> {
-            arrayList.clear();
-            arrayList.addAll(courses);
-            courseAdapter.notifyDataSetChanged();
-        });
-        FirebaseDatabase.getInstance().getReference().child(BuildConfig.BUILD_TYPE)
-                .child("/courses/").addChildEventListener(this);
-        return view;
-    }
-
-    private void handleSort() {
-        final CharSequence[] sortOrders = new CharSequence[]{
-                "Course Name",
-                "Course Code",
-        };
-        new AlertDialog.Builder(getActivity())
-                .setTitle("Sort By")
-                .setSingleChoiceItems(sortOrders, currentSortOrder, (dialog, which) -> {
-                    if (which == 0) {
-                        currentSortOrder = 0;
-                        courseVm.getAllCoursesByName().observe(this, courses -> {
-                            arrayList.clear();
-                            arrayList.addAll(courses);
-                            courseAdapter.notifyDataSetChanged();
-                        });
-                    } else {
-                        currentSortOrder = 1;
-                        courseVm.getAllCoursesByCode().observe(this, courses -> {
-                            arrayList.clear();
-                            arrayList.addAll(courses);
-                            courseAdapter.notifyDataSetChanged();
-                        });
-                    }
-                    dialog.dismiss();
-                }).show();
-    }
-
-
 
     public static void handleAddCourse(Context context) {
         final boolean signedIn = FirebaseAuth.getInstance().getCurrentUser() != null;
@@ -139,6 +89,54 @@ public class CourseListFragment extends Fragment implements ChildEventListener {
     private static void handleSignInAndStorage(final Context context) {
         final Intent intent = new Intent(context, GetGoogleSignInActivity.class);
         context.startActivity(intent);
+    }
+
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        courseVm = ViewModelProviders.of(this).get(CourseVm.class);
+        final View view = inflater.inflate(R.layout.fragment_course_list, container, false);
+        RecyclerView coursesRv = view.findViewById(R.id.rv_course_list);
+        courseAdapter = new CourseAdapter(arrayList);
+        coursesRv.setAdapter(courseAdapter);
+        coursesRv.setLayoutManager(new LinearLayoutManager(getContext()));
+        courseVm.getAllCoursesByName().observe(this, courses -> {
+            arrayList.clear();
+            arrayList.addAll(courses);
+            courseAdapter.notifyDataSetChanged();
+        });
+        FirebaseDatabase.getInstance().getReference().child(BuildConfig.BUILD_TYPE)
+                .child("/courses/").addChildEventListener(this);
+        return view;
+    }
+
+    public void handleSort() {
+        final CharSequence[] sortOrders = new CharSequence[]{
+                "Course Name",
+                "Course Code",
+        };
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Sort By")
+                .setSingleChoiceItems(sortOrders, currentSortOrder, (dialog, which) -> {
+                    if (which == 0) {
+                        currentSortOrder = 0;
+                        courseVm.getAllCoursesByName().observe(this, courses -> {
+                            arrayList.clear();
+                            arrayList.addAll(courses);
+                            courseAdapter.notifyDataSetChanged();
+                        });
+                    } else {
+                        currentSortOrder = 1;
+                        courseVm.getAllCoursesByCode().observe(this, courses -> {
+                            arrayList.clear();
+                            arrayList.addAll(courses);
+                            courseAdapter.notifyDataSetChanged();
+                        });
+                    }
+                    dialog.dismiss();
+                }).show();
     }
 
     @Override
@@ -183,4 +181,5 @@ public class CourseListFragment extends Fragment implements ChildEventListener {
     public void onCancelled(final @NonNull DatabaseError databaseError) {
         Log.e(TAG, databaseError.getMessage(), databaseError.toException());
     }
+
 }

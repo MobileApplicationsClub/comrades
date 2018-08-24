@@ -22,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.macbitsgoa.comrades.aboutmac.AboutMacActivity;
@@ -36,23 +37,29 @@ import java.util.Objects;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.macbitsgoa.comrades.CHCKt.TAG_PREFIX;
+
 
 public class HomeActivity extends AppCompatActivity {
-    public static String SETTINGS = "NotificationSetting";
+    public static final String SETTINGS = "NotificationSetting";
+    public static final String TAG_HOME_FRAG = "HomeFragment";
+    public static final String TAG_COURSE_LIST_FRAG = "CourseListFragment";
+    public static final String TAG_PROFILE_FRAG = "ProfileFragment";
+    public static final String TAG = TAG_PREFIX + HomeActivity.class.getSimpleName();
     public static BottomNavigationView navigation;
+    public static CoordinatorLayout snack;
     private GoogleApiClient mGoogleApiClient;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private SearchView searchView;
     private MySimpleDraweeView userProfileImage;
     private FloatingActionButton fab_add_course;
-    public static CoordinatorLayout snack;
+    private Screens currentScreen = Screens.HOME;
     @SuppressLint("RestrictedApi")
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
@@ -60,35 +67,41 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.navigation_home:
                 fab_add_course.setVisibility(View.GONE);
                 fab_add_course.setOnClickListener(null);
-                Fragment homeFragment=fragmentManager.findFragmentByTag("HomeFragment");
-                if(homeFragment==null){
-                    homeFragment=HomeFragment.newInstance();
+                Fragment homeFragment = fragmentManager.findFragmentByTag(TAG_HOME_FRAG);
+                if (homeFragment == null) {
+                    homeFragment = HomeFragment.newInstance();
                 }
                 fragmentManager.beginTransaction().replace(R.id.container_fragment,
-                        homeFragment,"HomeFragment").commit();
-                return true;
+                        homeFragment, TAG_HOME_FRAG).commit();
+                currentScreen = Screens.HOME;
+                break;
             case R.id.navigation_courses:
                 fab_add_course.setVisibility(View.VISIBLE);
                 fab_add_course.setOnClickListener(v -> CourseListFragment.handleAddCourse(HomeActivity.this));
-                Fragment courseListFragment=fragmentManager.findFragmentByTag("CourseListFragment");
-                if(courseListFragment==null){
-                    courseListFragment= CourseListFragment.newInstance();
+                Fragment courseListFragment = fragmentManager.findFragmentByTag(TAG_COURSE_LIST_FRAG);
+                if (courseListFragment == null) {
+                    courseListFragment = CourseListFragment.newInstance();
                 }
                 fragmentManager.beginTransaction().replace(R.id.container_fragment,
-                        courseListFragment,"CourseListFragment").addToBackStack(null).commit();
-                return true;
+                        courseListFragment, TAG_COURSE_LIST_FRAG).addToBackStack(null).commit();
+                currentScreen = Screens.COURSE_LIST;
+                break;
             case R.id.navigation_profile:
                 fab_add_course.setVisibility(View.GONE);
                 fab_add_course.setOnClickListener(null);
-                Fragment profileFragment=fragmentManager.findFragmentByTag("ProfileFragment");
-                if(profileFragment==null){
-                    profileFragment=ProfileFragment.newInstance();
+                Fragment profileFragment = fragmentManager.findFragmentByTag(TAG_PROFILE_FRAG);
+                if (profileFragment == null) {
+                    profileFragment = ProfileFragment.newInstance();
                 }
                 fragmentManager.beginTransaction().replace(R.id.container_fragment,
-                        profileFragment,"ProfileFragment").addToBackStack(null).commit();
-                return true;
+                        profileFragment, TAG_PROFILE_FRAG).addToBackStack(null).commit();
+                currentScreen = Screens.PROFILE;
+                break;
+            default:
+                return false;
         }
-        return false;
+        invalidateOptionsMenu();
+        return true;
     };
 
     @Override
@@ -100,8 +113,8 @@ public class HomeActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         userProfileImage = findViewById(R.id.profile_user_toolbar);
         navigation = findViewById(R.id.navigation);
-        snack=findViewById(R.id.container);
-        fab_add_course=findViewById(R.id.fab_add_course);
+        snack = findViewById(R.id.container);
+        fab_add_course = findViewById(R.id.fab_add_course);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         fragmentManager.addOnBackStackChangedListener(getListener());
         SharedPreferences sharedPreferences =
@@ -139,6 +152,17 @@ public class HomeActivity extends AppCompatActivity {
         savedInstanceState.putInt("bottomNav", navigation.getSelectedItemId());
     }
 
+    private FragmentManager.OnBackStackChangedListener getListener() {
+        return () -> {
+            if (fragmentManager != null) {
+                Fragment currFrag = fragmentManager.findFragmentByTag(TAG_PROFILE_FRAG);
+                if (navigation.getSelectedItemId() == R.id.navigation_profile && currFrag != null) {
+                    currFrag.onResume();
+                }
+            }
+        };
+    }
+
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         final MenuInflater inflater = getMenuInflater();
@@ -165,7 +189,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager != null ? searchManager.getSearchableInfo(getComponentName()) : null);
         searchView.setIconifiedByDefault(true);
         searchView.setIconified(false);
@@ -193,6 +217,24 @@ public class HomeActivity extends AppCompatActivity {
             return true;
 
         });
+
+        MenuItem sort = menu.findItem(R.id.action_sort);
+        if (currentScreen == Screens.COURSE_LIST) {
+            sort.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(final MenuItem menuItem) {
+                    Fragment fragment = fragmentManager.findFragmentByTag(TAG_COURSE_LIST_FRAG);
+                    if (fragment != null && fragment instanceof CourseListFragment) {
+                        ((CourseListFragment) fragment).handleSort();
+                    } else {
+                        Log.e(TAG, "sort icon was shown but, currently not in course list fragment");
+                    }
+                    return true;
+                }
+            });
+        } else {
+            sort.setVisible(false);
+        }
         return true;
 
     }
@@ -217,6 +259,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (navigation.getSelectedItemId() == R.id.navigation_home) {
+            finish();
+        } else {
+            navigation.setSelectedItemId(R.id.navigation_home);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         invalidateOptionsMenu();
@@ -231,23 +282,9 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (navigation.getSelectedItemId() == R.id.navigation_home) {
-            finish();
-        } else {
-            navigation.setSelectedItemId(R.id.navigation_home);
-        }
-    }
-
-    private FragmentManager.OnBackStackChangedListener getListener() {
-        return () -> {
-            if (fragmentManager != null) {
-                Fragment currFrag = fragmentManager.findFragmentByTag("ProfileFragment");
-                if(navigation.getSelectedItemId()==R.id.navigation_profile && currFrag != null){
-                        currFrag.onResume();
-                }
-            }
-        };
+    public enum Screens {
+        HOME,
+        COURSE_LIST,
+        PROFILE
     }
 }
