@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
@@ -115,7 +116,7 @@ public class CourseListFragment extends Fragment implements ChildEventListener {
         }
 
         if (signedIn && storagePermission) {
-            final FragmentManager fm = ((HomeActivity)context).getSupportFragmentManager();
+            final FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
             final FragmentTransaction ft = fm.beginTransaction();
             final DialogFragment addCourseFragment = new AddCourseFragment();
             addCourseFragment.show(ft, ADD_COURSE_FRAGMENT);
