@@ -22,7 +22,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.api.client.googleapis.extensions.android.accounts.GoogleAccountManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.macbitsgoa.comrades.aboutmac.AboutMacActivity;
@@ -60,7 +59,6 @@ public class HomeActivity extends AppCompatActivity {
     private MySimpleDraweeView userProfileImage;
     private FloatingActionButton fab_add_course;
     private Screens currentScreen = Screens.HOME;
-    @SuppressLint("RestrictedApi")
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
         switch (item.getItemId()) {
@@ -72,7 +70,7 @@ public class HomeActivity extends AppCompatActivity {
                     homeFragment = HomeFragment.newInstance();
                 }
                 fragmentManager.beginTransaction().replace(R.id.container_fragment,
-                        homeFragment, TAG_HOME_FRAG).commit();
+                        homeFragment, TAG_HOME_FRAG).addToBackStack(null).commit();
                 currentScreen = Screens.HOME;
                 break;
             case R.id.navigation_courses:
@@ -188,8 +186,9 @@ public class HomeActivity extends AppCompatActivity {
             return true;
         });
 
+        MenuItem search = menu.findItem(R.id.action_search);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) search.getActionView();
         searchView.setSearchableInfo(searchManager != null ? searchManager.getSearchableInfo(getComponentName()) : null);
         searchView.setIconifiedByDefault(true);
         searchView.setIconified(false);
@@ -211,6 +210,21 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        final MenuItem sort = menu.findItem(R.id.action_sort);
+        search.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(final MenuItem menuItem) {
+                sort.setVisible(false);
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(final MenuItem menuItem) {
+                invalidateOptionsMenu();
+                return true;
+            }
+        });
+
         final MenuItem aboutMac = menu.findItem(R.id.action_about_mac);
         aboutMac.setOnMenuItemClickListener(menuItem1 -> {
             startActivity(new Intent(this, AboutMacActivity.class));
@@ -218,7 +232,6 @@ public class HomeActivity extends AppCompatActivity {
 
         });
 
-        MenuItem sort = menu.findItem(R.id.action_sort);
         if (currentScreen == Screens.COURSE_LIST) {
             sort.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
