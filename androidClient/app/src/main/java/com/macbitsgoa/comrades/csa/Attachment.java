@@ -5,5 +5,6 @@ package com.macbitsgoa.comrades.csa;
  */
 public class Attachment {
     public String name;
+    public String type;
     public String url;
 }

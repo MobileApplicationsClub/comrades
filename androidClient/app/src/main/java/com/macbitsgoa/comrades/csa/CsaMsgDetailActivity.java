@@ -27,6 +27,7 @@ public class CsaMsgDetailActivity extends AppCompatActivity {
 
         CsaNews news = new Gson().fromJson(getIntent().getStringExtra(EXTRA_KEY_NEWS), CsaNews.class);
 
+
         final TextView titleTv = findViewById(R.id.Heading);
         final TextView contentTv = findViewById(R.id.content_csa_msg);
         final TextView nameTv = findViewById(R.id.sender_name);
@@ -45,8 +46,12 @@ public class CsaMsgDetailActivity extends AppCompatActivity {
         contentTv.setText(news.content);
         timestampTv.setText(news.timestamp);
 
-        final AttachmentsAdapter attachmentsAdapter = new AttachmentsAdapter(news.attachment);
-        attachList.setAdapter(attachmentsAdapter);
-        dpSdv.setImageURI(news.profileImageUrl);
+        if(news.attachment!=null)
+        {
+            final AttachmentsAdapter attachmentsAdapter = new AttachmentsAdapter(news.attachment,this);
+            attachList.setAdapter(attachmentsAdapter);
+        }
+        dpSdv.setImageURI(news.profileImageURL);
+
     }
 }

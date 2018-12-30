@@ -58,6 +58,8 @@
             android:id="@+id/profile_dp"
             android:layout_width="75dp"
             android:layout_height="75dp"
+            app:placeholderImage="@drawable/ic_person_black_24dp"
+            app:placeholderImageScaleType="fitCenter"
             app:roundAsCircle="true"
             android:layout_margin="5dp"/>
 
