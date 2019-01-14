@@ -93,8 +93,8 @@ public class AttachmentsAdapter extends RecyclerView.Adapter<AttachmentsAdapter.
                     Uri uri = Uri.parse(attachment.url);
                     DownloadManager.Request request = new DownloadManager.Request(uri);
                     request.setVisibleInDownloadsUi(true);
-                    request.setTitle("Fetching attachment..");
-                    request.setDescription("File - "+attachment.name);
+                    request.setTitle("Attachment");
+                    request.setDescription(""+attachment.name);
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                     request.setMimeType(getMimeType(uri.toString()));
                     request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
