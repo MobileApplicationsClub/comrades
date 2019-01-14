@@ -8,7 +8,7 @@ public class CsaNews {
     public String post;
     public String content;
     public String timestamp;
-    public String profileImageUrl;
+    public String profileImageURL;
     public List<Attachment> attachment;
     public boolean notify;
 }
