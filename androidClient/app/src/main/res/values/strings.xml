@@ -1,8 +1,8 @@
 <!--suppress ALL -->
 <resources>
     <string name="app_name">Comrades</string>
-    <string name="app_version">Version 1</string>
-    <string name="about_mac_main">Comrades is a free, handy and open file sharing platform by Mobile Applications Club for students of BITS Goa, to become their companion in acads and everyday life. This app allows you to add to the library of content already present and hence creates an ever-growing storage of knowledge and information. So, next time you need a file, you\'ll surely find it on Comrades.</string>
+    <string name="app_version">Version 2</string>
+    <string name="about_mac_main">Comrades is a free, handy and open file sharing platform by Developers Society for students of BITS Goa, to become their companion in acads and everyday life. This app allows you to add to the library of content already present and hence creates an ever-growing storage of knowledge and information. So, next time you need a file, you\'ll surely find it on Comrades.</string>
     <string name="about_mac_contributors"><b>Contributors</b></string>
     <string name="title_activity_sign_in">SignInActivity</string>
     <string name="title_activity_download">DownloadActivity</string>
