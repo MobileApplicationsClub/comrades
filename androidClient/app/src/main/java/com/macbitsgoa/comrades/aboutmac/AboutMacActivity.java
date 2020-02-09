@@ -27,7 +27,7 @@ public class AboutMacActivity extends AppCompatActivity implements View.OnClickL
     public static String ABOUT_US_FACEBOOK_PAGE_ID = "MACBITSGoa";
     public static String ABOUT_US_GITHUB_URL = "https://github.com/MobileApplicationsClub/";
     public static String ABOUT_US_LINKEDIN_URL = "https://www.linkedin.com/company/mobile-applications-club/";
-    public static String ABOUT_US_MACWEBSITE_URL = "https://macbitsgoa.com/";
+    public static String ABOUT_US_MACWEBSITE_URL = "https://devsoc.club/";
     public static String ABOUT_APP_TITLE = "About App";
 
     @Override
